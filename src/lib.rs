@@ -18,6 +18,7 @@ pub mod learning;
 pub mod padagonia;
 pub mod provider;
 pub mod punt;
+pub mod quota;
 pub mod resource;
 pub mod runway;
 pub mod schema;

@@ -19,6 +19,11 @@ required = true
 forbid_regex = ["TODO", "FIXME", "unimplemented!"]
 
 [[file]]
+path = "src/sim/prove.rs"
+required = true
+forbid_regex = ["TODO", "FIXME", "unimplemented!"]
+
+[[file]]
 path = "src/scouting/amnesia.rs"
 required = true
 forbid_regex = ["TODO", "FIXME", "unimplemented!"]

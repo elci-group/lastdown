@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Plate 03 · Continuation — Lastdown Anthology</title>
+  <meta name="description" content="The LASTDOWN/1 package, two-phase commit, file handoff, and fresh resume.">
+  <link rel="icon" href="/favicon.svg">
+  <link rel="stylesheet" href="/css/anthology.css">
+</head>
+<body>
+  <a class="skip" href="#plate">Skip to the plate</a>
+  <div class="volume">
+    <aside class="spine">
+      <a class="mark" href="/">
+        <span class="mark-ld">Field book</span>
+        <span class="mark-name">Lastdown</span>
+        <span class="mark-magic">LASTDOWN/1</span>
+      </a>
+      <nav aria-label="Plates">
+        <ol>
+          <li><a href="/"><span>00</span> Contents</a></li>
+          <li><a href="/field"><span>01</span> The Field</a></li>
+          <li><a href="/reserve"><span>02</span> The Reserve</a></li>
+          <li><a href="/continuation"><span>03</span> Continuation</a></li>
+          <li><a href="/scouting"><span>04</span> Scouting</a></li>
+          <li><a href="/quota"><span>05</span> Account Quota</a></li>
+          <li><a href="/benches"><span>06</span> Measured Ledger</a></li>
+          <li><a href="/operate"><span>07</span> Operator</a></li>
+        </ol>
+      </nav>
+      <p class="spine-foot">Edition 0.1.2<br>Arrow keys turn the page</p>
+    </aside>
+    <article class="leaf" id="plate">
+      <p class="watermark" aria-hidden="true">03</p>
+      <header class="running">
+        <span>Plate 03</span>
+        <span>Continuation</span>
+        <span>LASTDOWN/1</span>
+      </header>
+      <p class="kicker">The sealed package</p>
+      <h1>A fresh context resumes from the object.</h1>
+      <p class="opening">The package opens with the magic <code>LASTDOWN/1</code> and schema version 1. Integrity hashes the typed sections. The inspection summary sits outside that hash and is not authoritative. Canonical bytes are <code>serde_json::to_vec</code> of the object. A resume accepts the file when it matches those bytes and the competitive-key scan is clean.</p>
+      <div class="cols">
+        <section class="card">
+          <h3>Inside the hash</h3>
+          <p>Typed sections of the continuation: the field evidence a successor needs to continue the drive.</p>
+        </section>
+        <section class="card">
+          <h3>Outside the hash</h3>
+          <p>The inspection summary. It can describe the object. It does not authorise it.</p>
+        </section>
+        <section class="card">
+          <h3>Before the bytes rest</h3>
+          <p>Credential-shaped text is stripped. A restricted artifact is refused when the destination is a foreign trust domain. Ledger bytes at rest are sealed with HMAC-SHA256 over a SHA-256 keystream. The caller supplies the key.</p>
+        </section>
+        <section class="card">
+          <h3>After commit</h3>
+          <p>The store is two-phase. The protocol records the sealed field only after <code>commit</code> succeeds. <code>MemoryStore</code> exposes <code>committed_count_for</code> on the store itself.</p>
+        </section>
+      </div>
+      <h2>File handoff</h2>
+      <p><code>lastdown handoff</code> runs <code>Kill::ImmediatelyAfterCommit</code> and writes the canonical package. <code>lastdown resume</code> reads that file in a fresh process, with a new sentinel and a new store, and supplies the receiver route from the resume request. Completed gates stay completed. Sequence continues from the artifact count.</p>
+      <p>On <code>token_budget</code> the stopped handoff has finished two gates. The fresh resume scores: scarce consumed 4&nbsp;000, scarce lost 0, four artifacts, status score. The full single-process bench of the same fixture scores at scarce consumed 8&nbsp;000, scarce lost 0, continuation 2&nbsp;940 bytes.</p>
+      <pre><code>lastdown handoff elci/fixtures/token_budget.json /tmp/token_budget.continuation.json
+lastdown resume elci/fixtures/token_budget.json /tmp/token_budget.continuation.json</code></pre>
+      <h2>What the successor receives</h2>
+      <p>The package and the candidate packet carry evidence, gates, and contradictions. The model key for a route lives on the route the coordinator assigns. Resume supplies <code>receiver-beta-2026-10</code> from the request. The predecessor’s model key stays off the package.</p>
+      <blockquote class="invariant">
+        <p>A drive can be stopped immediately after one committed punt, and a later process can score the field from that file alone.</p>
+      </blockquote>
+      <nav class="turn" aria-label="Adjacent plates">
+        <a href="/reserve">Previous · The Reserve</a>
+        <a href="/scouting">Next · Scouting</a>
+      </nav>
+    </article>
+  </div>
+  <script src="/js/anthology.js"></script>
+</body>
+</html>

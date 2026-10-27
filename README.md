@@ -20,6 +20,7 @@ cargo test
 cargo run --bin lastdown -- bench elci/fixtures/token_budget.json
 cargo run --bin lastdown -- sim elci/fixtures/provider_loss.json
 cargo run --bin lastdown -- ablate elci/fixtures
+cargo run --bin lastdown -- prove elci/fixtures
 cargo run --bin lastdown -- handoff elci/fixtures/token_budget.json /tmp/token_budget.continuation.json
 cargo run --bin lastdown -- resume elci/fixtures/token_budget.json /tmp/token_budget.continuation.json
 ```
@@ -31,6 +32,22 @@ Fixtures under `elci/fixtures/` are replayable exhaustion, fault, and
 punt-loop cases. `ablate` prints lost resources for Lastdown and the baseline,
 then the reserve, amnesia, and calibration gaps.
 
+## Proof ledger
+
+`prove` prints one row per fixture and three claims. `reserve_conservation`
+is supported when Lastdown loses less scarce resource than the exhaustion
+baseline, records no more context losses, and records no turnover. Wall-clock
+time and provider switches are absent from the simulator and print as `-`.
+
+`punt_advantage` stays unmeasured. On `token_budget` the ledger also records
+the in-memory resume of the committed package. That receiver runs the same
+steps. A summarise-and-restart arm and an orchestrator-switch arm are not in
+the harness.
+
+`amnesia_advantage` stays unmeasured. `isolation_clean` and `isolation_raw`
+are the poisoned-field hit counts from `ablate`. A clean packet is a leak
+scan. It is not a comparison of receiver selection.
+
 ## Reserve
 
 Ordinary work may spend `remaining - reserve_hold`. Continuation work may
@@ -38,6 +55,16 @@ spend the hold, and only while a punt or field goal is being sealed. A
 provider boundary records a punt when the hold is intact. It does not record
 a turnover. Fixtures lock the reserve so the punt point stays exact. An
 unlocked budget follows `estimate_reserve` as the field grows.
+
+## Quota
+
+An InGauge probe or status snapshot can ride along on a fixture under `ingauge`.
+Lastdown reads the tightest integer token window. A missing or fractional
+measurement stays disengaged and leaves the drive on its token budget. When a
+window is present, that remaining amount is the account quota: ordinary work
+may spend `remaining - reserve`, and a later possession in the same campaign
+keeps what the account has left. `lastdown quota <snapshot.json>` prints the
+reading.
 
 ## Continuation
 

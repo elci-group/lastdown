@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Plate 02 · The Reserve — Lastdown Anthology</title>
+  <meta name="description" content="Ordinary spend, the continuation hold, the drive statuses, and the punt decision.">
+  <link rel="icon" href="/favicon.svg">
+  <link rel="stylesheet" href="/css/anthology.css">
+</head>
+<body>
+  <a class="skip" href="#plate">Skip to the plate</a>
+  <div class="volume">
+    <aside class="spine">
+      <a class="mark" href="/">
+        <span class="mark-ld">Field book</span>
+        <span class="mark-name">Lastdown</span>
+        <span class="mark-magic">LASTDOWN/1</span>
+      </a>
+      <nav aria-label="Plates">
+        <ol>
+          <li><a href="/"><span>00</span> Contents</a></li>
+          <li><a href="/field"><span>01</span> The Field</a></li>
+          <li><a href="/reserve"><span>02</span> The Reserve</a></li>
+          <li><a href="/continuation"><span>03</span> Continuation</a></li>
+          <li><a href="/scouting"><span>04</span> Scouting</a></li>
+          <li><a href="/quota"><span>05</span> Account Quota</a></li>
+          <li><a href="/benches"><span>06</span> Measured Ledger</a></li>
+          <li><a href="/operate"><span>07</span> Operator</a></li>
+        </ol>
+      </nav>
+      <p class="spine-foot">Edition 0.1.2<br>Arrow keys turn the page</p>
+    </aside>
+    <article class="leaf" id="plate">
+      <p class="watermark" aria-hidden="true">02</p>
+      <header class="running">
+        <span>Plate 02</span>
+        <span>The Reserve</span>
+        <span>Schema 1</span>
+      </header>
+      <p class="kicker">Spend classes</p>
+      <h1>Ordinary work stops at the hold.</h1>
+      <p class="opening">Ordinary work may spend <code>remaining − reserve_hold</code>. Continuation work may spend the hold, and only while a punt, a reset, or a field goal is being sealed. A provider boundary with that hold intact commits a punt. <code>MachineEvent::Unrecoverable(ProviderExhausted)</code> returns <code>ExhaustionIsNotTurnover</code>.</p>
+      <figure class="meter">
+        <figcaption>First possession of <code>token_budget</code>. Grant 5&nbsp;000, reserve 800. Two steps of 2&nbsp;000 fit. The next step does not.</figcaption>
+        <div class="meter-track" role="img" aria-label="4000 spent, 200 still ordinary, 800 held in reserve, of a 5000 grant">
+          <span class="tb-spent">spent 4000</span>
+          <span class="tb-slack">200</span>
+          <span class="tb-hold">hold 800</span>
+        </div>
+        <ul class="legend">
+          <li><i class="sw-spent"></i>Two completed gates</li>
+          <li><i class="sw-slack"></i>200 left in ordinary</li>
+          <li><i class="sw-hold"></i>Continuation reserve</li>
+        </ul>
+      </figure>
+      <h2>When lastdown opens</h2>
+      <p><code>should_open_lastdown</code> stays closed while ordinary resources cover the remaining work. It opens when ordinary resources do not cover the next cost. Otherwise it opens when pressure is already at lastdown, banked utility is above zero, and a fresh ordinary grant covers the work that remains.</p>
+      <p>A possession that can still cover the remainder keeps the ball.</p>
+      <h2>Four utilities</h2>
+      <table>
+        <caption>Decision order starts at punt. A later choice replaces it only when its utility is strictly greater.</caption>
+        <thead>
+          <tr><th scope="col">Choice</th><th scope="col">Utility</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Attempt</td><td><code>scale_by_probability(p_score, full_utility)</code>. Zero when <code>p_score</code> sits under <code>min_attempt</code>.</td></tr>
+          <tr><td>Field goal</td><td>The banked utility, taken as it stands.</td></tr>
+          <tr><td>Punt</td><td>Preserve-probability applied to banked utility plus the scaled remainder.</td></tr>
+          <tr><td>Reset</td><td>The punt utility times <code>(1_000_000 + reset_bonus_ppm) / 1_000_000</code>.</td></tr>
+        </tbody>
+      </table>
+      <p>Equal punt and reset utilities stay on punt. A field goal seals through the punt transaction, then the status returns to field goal, which is terminal, so the drive does not resume. The case is hopeless when banked utility and all four utilities are zero.</p>
+      <h2>Drive statuses</h2>
+      <ol class="flow">
+        <li>kickoff</li>
+        <li>normal</li>
+        <li>redzone</li>
+        <li class="decision">lastdown</li>
+        <li>attempt</li>
+        <li class="terminal">field goal</li>
+        <li>reset</li>
+        <li>punt</li>
+        <li>blind scout</li>
+        <li>route</li>
+        <li class="terminal">score</li>
+        <li class="terminal">turnover</li>
+      </ol>
+      <p>Field goal, score, and turnover are terminal. On the default drive a punt or a reset resumes by assigning possession and returning to normal. The fixture runner does that handoff itself. Blind scouting stays on the coordinator API, <code>request_scouts</code> and <code>complete_scouts</code>.</p>
+      <h2>Repeated possessions</h2>
+      <p><code>loop_signal</code> reads the progress marks. Two regressions ask for rollback. Six marks with no positive advance and no score ask for diagnosis. Three neutral marks ask for reassessment. Rollback outranks diagnosis, and diagnosis outranks reassessment. The campaign loop stops at 32 cycles. <code>Kill::ImmediatelyAfterCommit</code> stops after one committed punt.</p>
+      <p>Fixtures set <code>reserve_hold</code> explicitly and lock the reserve, so the punt point stays exact. An unlocked budget follows <code>estimate_reserve</code> as the field grows.</p>
+      <nav class="turn" aria-label="Adjacent plates">
+        <a href="/field">Previous · The Field</a>
+        <a href="/continuation">Next · Continuation</a>
+      </nav>
+    </article>
+  </div>
+  <script src="/js/anthology.js"></script>
+</body>
+</html>

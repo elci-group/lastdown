@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Plate 07 · Operator — Lastdown Anthology</title>
+  <meta name="description" content="Lastdown commands, exit codes, fixtures, and the boundaries of this crate.">
+  <link rel="icon" href="/favicon.svg">
+  <link rel="stylesheet" href="/css/anthology.css">
+</head>
+<body>
+  <a class="skip" href="#plate">Skip to the plate</a>
+  <div class="volume">
+    <aside class="spine">
+      <a class="mark" href="/">
+        <span class="mark-ld">Field book</span>
+        <span class="mark-name">Lastdown</span>
+        <span class="mark-magic">LASTDOWN/1</span>
+      </a>
+      <nav aria-label="Plates">
+        <ol>
+          <li><a href="/"><span>00</span> Contents</a></li>
+          <li><a href="/field"><span>01</span> The Field</a></li>
+          <li><a href="/reserve"><span>02</span> The Reserve</a></li>
+          <li><a href="/continuation"><span>03</span> Continuation</a></li>
+          <li><a href="/scouting"><span>04</span> Scouting</a></li>
+          <li><a href="/quota"><span>05</span> Account Quota</a></li>
+          <li><a href="/benches"><span>06</span> Measured Ledger</a></li>
+          <li><a href="/operate"><span>07</span> Operator</a></li>
+        </ol>
+      </nav>
+      <p class="spine-foot">Edition 0.1.2<br>Arrow keys turn the page</p>
+    </aside>
+    <article class="leaf" id="plate">
+      <p class="watermark" aria-hidden="true">07</p>
+      <header class="running">
+        <span>Plate 07</span>
+        <span>Operator</span>
+        <span>lastdown</span>
+      </header>
+      <p class="kicker">From this checkout</p>
+      <h1>Run the drive. Read the line.</h1>
+      <p class="opening">The binary is <code>lastdown</code>. <code>bench</code> prints one Lastdown line and one baseline line. <code>sim</code> prints the Lastdown campaign. <code>ablate</code> walks a fixture directory. <code>prove</code> prints that directory as three claims. <code>handoff</code> stops at the committed punt and writes the package. <code>resume</code> loads that file in a fresh process. <code>quota</code> prints the InGauge reading.</p>
+      <pre><code>cargo run --offline --bin lastdown -- bench elci/fixtures/token_budget.json
+cargo run --offline --bin lastdown -- bench elci/fixtures/quota_limit.json
+cargo run --offline --bin lastdown -- sim elci/fixtures/provider_loss.json
+cargo run --offline --bin lastdown -- ablate elci/fixtures
+cargo run --offline --bin lastdown -- prove elci/fixtures
+cargo run --offline --bin lastdown -- handoff elci/fixtures/token_budget.json /tmp/token_budget.continuation.json
+cargo run --offline --bin lastdown -- resume elci/fixtures/token_budget.json /tmp/token_budget.continuation.json
+cargo run --offline --bin lastdown -- quota elci/fixtures/quota_limit.json</code></pre>
+      <h2>Exit codes</h2>
+      <dl class="facts">
+        <dt>0</dt><dd>The command finished. A disengaged quota reading is a successful reading.</dd>
+        <dt>1</dt><dd>The fixture, the snapshot, or the handoff file failed. Invalid quota JSON exits here.</dd>
+        <dt>2</dt><dd>The command line was incomplete. The usage string names every verb.</dd>
+      </dl>
+      <h2>Fixtures</h2>
+      <p>JSON under <code>elci/fixtures</code> uses schema 1 and denies unknown fields. A missing <code>ingauge</code> key defaults to absent, so older fixtures still load. The set is <code>token_budget</code>, <code>quota_limit</code>, <code>provider_loss</code>, <code>punt_loop</code>, <code>context_exhaustion</code>, <code>rate_limit</code>, <code>slow_provider</code>, <code>financial_budget</code>, <code>partial_tool</code>, <code>malformed_response</code>, and <code>uncommitted_changes</code>.</p>
+      <h2>Boundaries this crate keeps</h2>
+      <div class="cols">
+        <section class="card">
+          <h3>In process</h3>
+          <p>The field ledger is the journal in <code>src/padagonia.rs</code>. Quota parsing uses <code>serde_json</code> on the snapshot the caller supplies. A live provider probe is outside the gate.</p>
+        </section>
+        <section class="card">
+          <h3>On the wire of the package</h3>
+          <p>Continuation bytes, replay checks, and telemetry stay in Rust. Canonical JSON is the object a fresh context resumes from.</p>
+        </section>
+        <section class="card">
+          <h3>Verify before a claim</h3>
+          <p><code>deliver --spec deliver.toml --strict</code> runs fmt, clippy with warnings denied, and <code>cargo test</code>. Then both benches, from <code>/home/sal/lastdown</code>. <code>prove</code> can support reserve conservation from those fixtures. Punt advantage and amnesia advantage stay unmeasured on this ledger.</p>
+        </section>
+        <section class="card">
+          <h3>This volume</h3>
+          <p>The anthology server is <code>cargo run --offline --manifest-path website/server/Cargo.toml</code>. It listens on <code>127.0.0.1:8741</code> and serves <code>website/public</code>.</p>
+        </section>
+      </div>
+      <p class="colophon">Work on the library stays in <code>/home/sal/lastdown</code>. That directory is its own git root. Publish only when asked, through kaptaind, with <code>-r /home/sal/lastdown</code>.</p>
+      <nav class="turn" aria-label="Adjacent plates">
+        <a href="/benches">Previous · Measured Ledger</a>
+        <a href="/">Contents</a>
+      </nav>
+    </article>
+  </div>
+  <script src="/js/anthology.js"></script>
+</body>
+</html>

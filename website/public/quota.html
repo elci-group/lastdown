@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Plate 05 · Account Quota — Lastdown Anthology</title>
+  <meta name="description" content="How an InGauge snapshot becomes an integer token window on a Lastdown drive.">
+  <link rel="icon" href="/favicon.svg">
+  <link rel="stylesheet" href="/css/anthology.css">
+</head>
+<body>
+  <a class="skip" href="#plate">Skip to the plate</a>
+  <div class="volume">
+    <aside class="spine">
+      <a class="mark" href="/">
+        <span class="mark-ld">Field book</span>
+        <span class="mark-name">Lastdown</span>
+        <span class="mark-magic">LASTDOWN/1</span>
+      </a>
+      <nav aria-label="Plates">
+        <ol>
+          <li><a href="/"><span>00</span> Contents</a></li>
+          <li><a href="/field"><span>01</span> The Field</a></li>
+          <li><a href="/reserve"><span>02</span> The Reserve</a></li>
+          <li><a href="/continuation"><span>03</span> Continuation</a></li>
+          <li><a href="/scouting"><span>04</span> Scouting</a></li>
+          <li><a href="/quota"><span>05</span> Account Quota</a></li>
+          <li><a href="/benches"><span>06</span> Measured Ledger</a></li>
+          <li><a href="/operate"><span>07</span> Operator</a></li>
+        </ol>
+      </nav>
+      <p class="spine-foot">Edition 0.1.2<br>Arrow keys turn the page</p>
+    </aside>
+    <article class="leaf" id="plate">
+      <p class="watermark" aria-hidden="true">05</p>
+      <header class="running">
+        <span>Plate 05</span>
+        <span>Account Quota</span>
+        <span>InGauge JSON</span>
+      </header>
+      <p class="kicker">A measured window</p>
+      <h1>The account keeps what it has left.</h1>
+      <p class="opening">An InGauge probe or status snapshot can ride on a fixture under <code>ingauge</code>. Lastdown reads that JSON in process. The engaged reading is the tightest integer token window. A missing measurement stays disengaged. It is never treated as zero capacity, and the drive stays on its token budget.</p>
+      <figure class="meter">
+        <figcaption><code>quota_limit</code> opens on a Groq token window: used 5&nbsp;500, limit 10&nbsp;000, remaining 4&nbsp;500. The reserve hold inside that window is 800, so ordinary quota is 3&nbsp;700.</figcaption>
+        <div class="meter-track" role="img" aria-label="Of 10000 account tokens, 5500 are used, 3700 are ordinary, and 800 are held">
+          <span class="q-used">used 5500</span>
+          <span class="q-ordinary">ordinary 3700</span>
+          <span class="q-hold">800</span>
+        </div>
+        <ul class="legend">
+          <li><i class="sw-used"></i>Already used on the account</li>
+          <li><i class="sw-spent"></i>Ordinary spend inside the remaining window</li>
+          <li><i class="sw-hold"></i>Reserve held back from ordinary work</li>
+        </ul>
+      </figure>
+      <h2>Which samples count</h2>
+      <table>
+        <caption>Token metrics engage. Other shapes stay off the window.</caption>
+        <thead>
+          <tr><th scope="col">Reading</th><th scope="col">Result</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Metric absent, <code>tokens</code>, or <code>remaining_tokens</code>, with an integer <code>remaining</code></td><td>A sample. The smallest remaining wins.</td></tr>
+          <tr><td><code>remaining</code> absent or null, and both <code>used</code> and <code>limit</code> are integers</td><td><code>limit − used</code>, saturating at zero.</td></tr>
+          <tr><td>Null remaining with no integer pair, or a fractional remaining</td><td>Unmeasured. The snapshot stays disengaged.</td></tr>
+          <tr><td>A request quota, including a tight request window</td><td>Ignored. It is a different scale.</td></tr>
+          <tr><td>Headroom, utilisation, and tokens per minute</td><td>Ignored. The parser keeps integers.</td></tr>
+          <tr><td>A remaining of zero that is a real integer</td><td>Engaged. Zero is a measurement.</td></tr>
+        </tbody>
+      </table>
+      <p>The parser walks <code>data</code>, <code>snapshots</code>, bridge records, and a nested <code>ingauge</code> object, so <code>lastdown quota</code> can read a fixture file as well as a bare envelope. Invalid JSON exits 1. A disengaged reading exits 0.</p>
+      <h2>One campaign, one account</h2>
+      <p>When the window is present, <code>provider_quota</code> on the grant is that remaining amount, and the hold on that dimension is <code>min(reserve, remaining)</code>. Each step’s quota cost equals its scarce cost, so the token accounting on the scarce dimension stays the number the bench already prints. A later possession in the same campaign receives the quota still left on the account. It does not receive a fresh full window.</p>
+      <p>On <code>quota_limit</code> the token grant is 20&nbsp;000, so a baseline that ignores the snapshot can finish four steps of 2&nbsp;000 and score. Lastdown takes one step, banks that gate, and punts. Later possessions see 2&nbsp;500 remaining with a hold of 800, so ordinary quota is 1&nbsp;700 and the next 2&nbsp;000 step does not fit. Neutrals accumulate to reassessment. The lastdown line reports <code>quota_remaining=2500</code>.</p>
+      <pre><code>quota engaged=true provider=groq remaining=4500 limit=10000 samples=1</code></pre>
+      <p>A fresh process re-reads whatever snapshot it is given. The continuation object itself is unchanged: <code>token_budget</code> still seals at 2&nbsp;940 bytes, and that fixture’s <code>quota_remaining</code> stays absent.</p>
+      <nav class="turn" aria-label="Adjacent plates">
+        <a href="/scouting">Previous · Scouting</a>
+        <a href="/benches">Next · Measured Ledger</a>
+      </nav>
+    </article>
+  </div>
+  <script src="/js/anthology.js"></script>
+</body>
+</html>

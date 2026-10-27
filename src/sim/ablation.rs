@@ -36,6 +36,14 @@ pub struct FixtureComparison {
     pub baseline_duplicate: u32,
     pub lastdown_context_losses: u32,
     pub baseline_context_losses: u32,
+    pub lastdown_gates: usize,
+    pub baseline_gates: usize,
+    pub lastdown_continuation_bytes: usize,
+    pub baseline_continuation_bytes: usize,
+    pub lastdown_turnover: bool,
+    pub baseline_turnover: bool,
+    pub lastdown_quota_remaining: Option<u64>,
+    pub baseline_quota_remaining: Option<u64>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -83,6 +91,14 @@ pub fn ablation_report(fixtures: &[Fixture]) -> Result<AblationReport, SimError>
             baseline_duplicate: baseline.result.duplicate_steps,
             lastdown_context_losses: lastdown.result.context_losses,
             baseline_context_losses: baseline.result.context_losses,
+            lastdown_gates: lastdown.result.completed_gates,
+            baseline_gates: baseline.result.completed_gates,
+            lastdown_continuation_bytes: lastdown.result.continuation_bytes,
+            baseline_continuation_bytes: baseline.result.continuation_bytes,
+            lastdown_turnover: lastdown.result.turnover,
+            baseline_turnover: baseline.result.turnover,
+            lastdown_quota_remaining: lastdown.result.quota_remaining,
+            baseline_quota_remaining: baseline.result.quota_remaining,
         });
     }
     rows.sort_by(|left, right| left.name.cmp(&right.name));

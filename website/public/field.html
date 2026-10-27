@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Plate 01 · The Field — Lastdown Anthology</title>
+  <meta name="description" content="Field ownership, model-relative yards-to-go, the ledger, and athletic amnesia.">
+  <link rel="icon" href="/favicon.svg">
+  <link rel="stylesheet" href="/css/anthology.css">
+</head>
+<body>
+  <a class="skip" href="#plate">Skip to the plate</a>
+  <div class="volume">
+    <aside class="spine">
+      <a class="mark" href="/">
+        <span class="mark-ld">Field book</span>
+        <span class="mark-name">Lastdown</span>
+        <span class="mark-magic">LASTDOWN/1</span>
+      </a>
+      <nav aria-label="Plates">
+        <ol>
+          <li><a href="/"><span>00</span> Contents</a></li>
+          <li><a href="/field"><span>01</span> The Field</a></li>
+          <li><a href="/reserve"><span>02</span> The Reserve</a></li>
+          <li><a href="/continuation"><span>03</span> Continuation</a></li>
+          <li><a href="/scouting"><span>04</span> Scouting</a></li>
+          <li><a href="/quota"><span>05</span> Account Quota</a></li>
+          <li><a href="/benches"><span>06</span> Measured Ledger</a></li>
+          <li><a href="/operate"><span>07</span> Operator</a></li>
+        </ol>
+      </nav>
+      <p class="spine-foot">Edition 0.1.2<br>Arrow keys turn the page</p>
+    </aside>
+    <article class="leaf" id="plate">
+      <p class="watermark" aria-hidden="true">01</p>
+      <header class="running">
+        <span>Plate 01</span>
+        <span>The Field</span>
+        <span>Schema 1</span>
+      </header>
+      <p class="kicker">Ownership</p>
+      <h1>The field belongs to the orchestration.</h1>
+      <p class="opening">Yards-to-go are model-relative. The field itself is independent of whichever model currently holds the ball. The coordinator owns the scoreboard: rankings, effective distance, and the selected route stay with ordinary code.</p>
+      <svg class="diagram" viewBox="0 0 640 150" role="img" aria-labelledby="ownTitle ownDesc">
+        <title id="ownTitle">Three owners on one drive</title>
+        <desc id="ownDesc">The field ledger sits with the orchestration. The incumbent holds possession. The coordinator holds rankings and the selected route.</desc>
+        <rect x="8" y="18" width="190" height="114" fill="#163028"/>
+        <rect x="224" y="18" width="190" height="114" fill="#8a5a18"/>
+        <rect x="440" y="18" width="190" height="114" fill="#c4522a"/>
+        <text x="22" y="52" fill="#f7f2e8" font-family="Palatino, Georgia, serif" font-size="18">Field ledger</text>
+        <text x="22" y="82" fill="#e4c98a" font-family="ui-monospace, monospace" font-size="12">observations</text>
+        <text x="22" y="102" fill="#e4c98a" font-family="ui-monospace, monospace" font-size="12">evidence, both sides</text>
+        <text x="238" y="52" fill="#f7f2e8" font-family="Palatino, Georgia, serif" font-size="18">Coordinator</text>
+        <text x="238" y="82" fill="#f7f2e8" font-family="ui-monospace, monospace" font-size="12">effective yards</text>
+        <text x="238" y="102" fill="#f7f2e8" font-family="ui-monospace, monospace" font-size="12">one selected route</text>
+        <text x="454" y="52" fill="#f7f2e8" font-family="Palatino, Georgia, serif" font-size="18">Incumbent</text>
+        <text x="454" y="82" fill="#f7f2e8" font-family="ui-monospace, monospace" font-size="12">ordinary work</text>
+        <text x="454" y="102" fill="#f7f2e8" font-family="ui-monospace, monospace" font-size="12">stops at the reserve</text>
+      </svg>
+      <h2>What the ledger keeps</h2>
+      <p>The in-process journal in <code>src/padagonia.rs</code> records observations, assertions, evidence, contradictions, corroborations, and supersessions. Both sides of a contradiction stay on the record. Scalar gate distance is the authoritative field distance. A compact integer vector is a size comparison, and <code>VECTOR_REQUIRED_FOR_RESUME</code> is false, so resume proceeds from the scalar record.</p>
+      <h2>Athletic amnesia</h2>
+      <p>A candidate packet carries evidence, gates, and contradictions. The continuation scanner refuses competitive and conversational keys, so a successor does not inherit the predecessor’s distance, the rankings, the coordinator’s notes, a model key, or the conversation.</p>
+      <ul class="keys">
+        <li>previous_model</li>
+        <li>previous_ytg</li>
+        <li>nominal_ytg</li>
+        <li>competitor_assessments</li>
+        <li>route_rank</li>
+        <li>selection_history</li>
+        <li>coordinator_notes</li>
+        <li>model_reputation</li>
+        <li>conversation</li>
+        <li>"messages"</li>
+      </ul>
+      <h2>Distance units</h2>
+      <dl class="facts">
+        <dt>Reference</dt><dd><code>YTG_REFERENCE_MILLI = 10_000</code>. Ten yards, stored as milli-yards.</dd>
+        <dt>Probability</dt><dd>Parts per million. <code>scale_by_probability</code> returns 0 when the ppm or the value is 0, and otherwise <code>max(1, ppm * value / 1_000_000)</code>.</dd>
+        <dt>Vector</dt><dd><code>tokens</code>, <code>context</code>, <code>provider_quota</code>, <code>account_budget</code>, <code>time_ms</code>, <code>tool_calls</code>. Arithmetic stays inside each dimension. <code>covers</code> checks every one.</dd>
+      </dl>
+      <nav class="turn" aria-label="Adjacent plates">
+        <a href="/">Previous · Contents</a>
+        <a href="/reserve">Next · The Reserve</a>
+      </nav>
+    </article>
+  </div>
+  <script src="/js/anthology.js"></script>
+</body>
+</html>

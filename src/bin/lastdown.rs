@@ -1,13 +1,15 @@
 use std::env;
+use std::fs;
 use std::process::ExitCode;
 
 use std::path::Path;
 
 use lastdown::sim::{
-    ablate_dir, bench, execute, export_handoff, load_fixture, resume_handoff, Kill, Mode,
+    ablate_dir, bench, execute, export_handoff, load_fixture, proof_lines, prove_dir,
+    resume_handoff, Kill, Mode,
 };
 
-const USAGE: &str = "usage: lastdown bench [fixture] | lastdown sim <fixture> | lastdown ablate [dir] | lastdown handoff <fixture> <file> | lastdown resume <fixture> <file>";
+const USAGE: &str = "usage: lastdown bench [fixture] | lastdown sim <fixture> | lastdown ablate [dir] | lastdown handoff <fixture> <file> | lastdown resume <fixture> <file> | lastdown quota <snapshot.json> | lastdown prove [dir]";
 
 fn main() -> ExitCode {
     let mut args = env::args().skip(1);
@@ -125,6 +127,56 @@ fn main() -> ExitCode {
                 }
             }
         }
+        "prove" => {
+            let path = args.next().unwrap_or_else(|| "elci/fixtures".to_string());
+            match prove_dir(Path::new(&path)) {
+                Ok(report) => {
+                    for line in proof_lines(&report) {
+                        println!("{line}");
+                    }
+                    ExitCode::SUCCESS
+                }
+                Err(error) => {
+                    eprintln!("prove failed: {error}");
+                    ExitCode::from(1)
+                }
+            }
+        }
+        "quota" => {
+            let Some(path) = args.next() else {
+                eprintln!("{USAGE}");
+                return ExitCode::from(2);
+            };
+            match fs::read(&path) {
+                Ok(bytes) => match lastdown::quota::read_ingauge_slice(&bytes) {
+                    Ok(reading) => {
+                        println!(
+                            "quota engaged={} provider={} remaining={} limit={} samples={}",
+                            reading.engaged,
+                            reading.provider.as_deref().unwrap_or("-"),
+                            reading
+                                .remaining
+                                .map(|value| value.to_string())
+                                .unwrap_or_else(|| "-".to_string()),
+                            reading
+                                .limit
+                                .map(|value| value.to_string())
+                                .unwrap_or_else(|| "-".to_string()),
+                            reading.samples
+                        );
+                        ExitCode::SUCCESS
+                    }
+                    Err(error) => {
+                        eprintln!("quota failed: {error}");
+                        ExitCode::from(1)
+                    }
+                },
+                Err(error) => {
+                    eprintln!("quota failed: {error}");
+                    ExitCode::from(1)
+                }
+            }
+        }
         _ => {
             eprintln!("{USAGE}");
             ExitCode::from(2)
@@ -160,4 +212,7 @@ fn print_result(label: &str, result: &lastdown::sim::SimResult) {
         result.replay_ok,
         result.continuation_bytes
     );
+    if let Some(remaining) = result.quota_remaining {
+        println!("{label} quota_remaining={remaining}");
+    }
 }

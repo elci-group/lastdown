@@ -1,0 +1,12 @@
+[package]
+name = "lastdown-anthology"
+version = "0.1.2"
+edition = "2021"
+license = "MIT"
+publish = false
+rust-version = "1.85"
+description = "Std-only server for the Lastdown anthology."
+
+[[bin]]
+name = "lastdown-anthology"
+path = "src/main.rs"

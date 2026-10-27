@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contents — Lastdown Anthology</title>
+  <meta name="description" content="Supporting plates for Lastdown: field position, the continuation reserve, handoff, scouting, InGauge quota, and the measured benches.">
+  <link rel="icon" href="/favicon.svg">
+  <link rel="stylesheet" href="/css/anthology.css">
+</head>
+<body>
+  <a class="skip" href="#plate">Skip to the plate</a>
+  <div class="volume">
+    <aside class="spine">
+      <a class="mark" href="/">
+        <span class="mark-ld">Field book</span>
+        <span class="mark-name">Lastdown</span>
+        <span class="mark-magic">LASTDOWN/1</span>
+      </a>
+      <nav aria-label="Plates">
+        <ol>
+          <li><a href="/"><span>00</span> Contents</a></li>
+          <li><a href="/field"><span>01</span> The Field</a></li>
+          <li><a href="/reserve"><span>02</span> The Reserve</a></li>
+          <li><a href="/continuation"><span>03</span> Continuation</a></li>
+          <li><a href="/scouting"><span>04</span> Scouting</a></li>
+          <li><a href="/quota"><span>05</span> Account Quota</a></li>
+          <li><a href="/benches"><span>06</span> Measured Ledger</a></li>
+          <li><a href="/operate"><span>07</span> Operator</a></li>
+        </ol>
+      </nav>
+      <p class="spine-foot">Edition 0.1.2<br>Arrow keys turn the page</p>
+    </aside>
+    <article class="leaf" id="plate">
+      <p class="watermark" aria-hidden="true">00</p>
+      <header class="running">
+        <span>Plate 00</span>
+        <span>Contents</span>
+        <span>Schema 1</span>
+      </header>
+      <div class="hero">
+        <div>
+          <p class="kicker">Anthology of supporting documents</p>
+          <h1>Possession, kept whole.</h1>
+          <p class="opening">Lastdown treats quota, context, and provider boundaries as field position. An incumbent keeps a continuation reserve it is not allowed to spend. When the next ordinary cycle would enter that reserve, the runtime freezes the field, commits a typed continuation, and releases possession.</p>
+        </div>
+        <svg class="field-svg" viewBox="0 0 360 220" role="img" aria-labelledby="coverTitle coverDesc">
+          <title id="coverTitle">Field with a continuation reserve</title>
+          <desc id="coverDesc">A green field of yard lines. Ordinary ground ends before an amber reserve band at the far hash.</desc>
+          <rect width="360" height="220" fill="#163028"/>
+          <g stroke="#e4c98a" stroke-opacity="0.55" fill="none">
+            <path d="M20 20 H340 V200 H20 Z"/>
+            <path d="M70 20 V200 M120 20 V200 M170 20 V200 M220 20 V200 M270 20 V200"/>
+            <path d="M20 70 H40 M20 150 H40 M340 70 H320 M340 150 H320"/>
+          </g>
+          <rect x="278" y="20" width="62" height="180" fill="#c4522a" fill-opacity="0.85"/>
+          <text x="36" y="118" fill="#f7f2e8" font-family="Palatino, Georgia, serif" font-size="18">ordinary</text>
+          <text x="286" y="118" fill="#f7f2e8" font-family="Palatino, Georgia, serif" font-size="13">reserve</text>
+        </svg>
+      </div>
+      <blockquote class="invariant">
+        <p>An execution leaves intact the resources required to preserve the field and transfer possession.</p>
+      </blockquote>
+      <nav class="toc" aria-label="Contents">
+        <a href="/field"><span class="toc-num">01</span><span class="toc-title">The Field</span><span class="toc-note">Ownership, yards, amnesia</span></a>
+        <a href="/reserve"><span class="toc-num">02</span><span class="toc-title">The Reserve</span><span class="toc-note">Punt before the boundary</span></a>
+        <a href="/continuation"><span class="toc-num">03</span><span class="toc-title">Continuation</span><span class="toc-note">Handoff and fresh resume</span></a>
+        <a href="/scouting"><span class="toc-num">04</span><span class="toc-title">Scouting and the Route</span><span class="toc-note">Candidates and one selection</span></a>
+        <a href="/quota"><span class="toc-num">05</span><span class="toc-title">Account Quota</span><span class="toc-note">InGauge token window</span></a>
+        <a href="/benches"><span class="toc-num">06</span><span class="toc-title">Measured Ledger</span><span class="toc-note">Locked bench lines</span></a>
+        <a href="/operate"><span class="toc-num">07</span><span class="toc-title">Operator</span><span class="toc-note">Commands and boundaries</span></a>
+      </nav>
+      <h2>How to read the volume</h2>
+      <p>Each plate states a contract the crate already keeps. Numbers on the measured ledger are the lines the fixture runner prints, and the assertions the tests hold. Probabilities are integer parts per million, from 0 through 1&nbsp;000&nbsp;000. Yards-to-go are milli-yards. The reference length is 10&nbsp;000, so a nominal distance at that mark leaves observed per-gate cost unchanged.</p>
+      <dl class="facts">
+        <dt>Package</dt><dd><code>lastdown</code> 0.1.2, Rust 2021, rust-version 1.85</dd>
+        <dt>Magic</dt><dd><code>LASTDOWN/1</code>, schema version 1</dd>
+        <dt>Encoding</dt><dd>Canonical JSON with section hashes</dd>
+        <dt>Safety</dt><dd><code>forbid(unsafe_code)</code>. Dependencies are serde, serde_json, sha2, and thiserror.</dd>
+      </dl>
+      <p class="colophon">The arrow keys, and <kbd>j</kbd> and <kbd>k</kbd>, turn from plate to plate. This volume is served by the std-only binary in <code>website/server</code>. That binary is outside the library workspace.</p>
+      <nav class="turn" aria-label="Adjacent plates">
+        <span></span>
+        <a href="/field">Next · The Field</a>
+      </nav>
+    </article>
+  </div>
+  <script src="/js/anthology.js"></script>
+</body>
+</html>

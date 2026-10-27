@@ -3,6 +3,7 @@ use std::fs;
 use std::path::Path;
 
 use serde::Deserialize;
+use serde_json::Value;
 
 use crate::core::drive::{
     loop_signal, AcceptanceGate, CapabilityNeed, Constraint, Drive, DriveBudget, LoopSignal,
@@ -92,6 +93,8 @@ pub struct Fixture {
     pub destination: TrustDomain,
     pub min_attempt_ppm: u32,
     pub reset_bonus_ppm: u32,
+    #[serde(default)]
+    pub ingauge: Option<Value>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -145,6 +148,7 @@ pub struct SimResult {
     pub reassessment: bool,
     pub completed_gates: usize,
     pub events: Vec<String>,
+    pub quota_remaining: Option<u64>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -171,6 +175,7 @@ struct Material {
     policy: LastdownPolicy,
     steps: Vec<PlannedStep>,
     observed_per_gate: ResourceVector,
+    quota_opening: Option<u64>,
 }
 
 struct PlannedStep {
@@ -411,8 +416,21 @@ fn fresh_possession(
         .last()
         .map(|event| event.at_ms)
         .unwrap_or(0);
-    let request = receiver_request(material, now_ms)?;
+    let mut request = receiver_request(material, now_ms)?;
+    if material.quota_opening.is_some() {
+        let left = drive.budget.remaining().provider_quota;
+        request.grant.provider_quota = left;
+        request.reserve_hold.provider_quota = material.hold.provider_quota.min(left);
+    }
     Ok(sentinel.resume(&drive.drive_id, generation, request)?)
+}
+
+fn fresh_grant(material: &Material, drive: &Drive) -> ResourceVector {
+    let mut grant = material.grant;
+    if material.quota_opening.is_some() {
+        grant.provider_quota = drive.budget.remaining().provider_quota;
+    }
+    grant
 }
 
 fn receiver_request(material: &Material, now_ms: u64) -> Result<ResumeRequest, SimError> {
@@ -627,6 +645,10 @@ fn pack(args: PackArgs<'_>) -> Result<Campaign, SimError> {
         reassessment,
         completed_gates: drive.field.completed_gates.len(),
         events,
+        quota_remaining: (mode == "lastdown")
+            .then_some(material.quota_opening)
+            .flatten()
+            .map(|_| drive.budget.remaining().provider_quota),
     };
     Ok(Campaign {
         result,
@@ -666,7 +688,7 @@ fn runway_inputs(
         rate_limit_headroom: Probability::from_ppm(fixture.rate_limit_headroom_ppm)
             .unwrap_or(Probability::ONE),
         next_cost,
-        fresh_grant: material.grant,
+        fresh_grant: fresh_grant(material, drive),
     }
 }
 
@@ -676,6 +698,11 @@ fn materialise(fixture: &Fixture) -> Result<(Drive, Material), SimError> {
     let mut hold = ResourceVector::zero();
     hold.tokens = fixture.reserve;
     hold.set(fixture.scarce, fixture.reserve);
+    let quota_opening = engaged_quota(fixture);
+    if let Some(remaining) = quota_opening {
+        grant.provider_quota = remaining;
+        hold.provider_quota = fixture.reserve.min(remaining);
+    }
     let reserve = ContinuationReserve {
         schema_version: SCHEMA_VERSION,
         serialization_tokens: fixture.reserve,
@@ -710,6 +737,9 @@ fn materialise(fixture: &Fixture) -> Result<(Drive, Material), SimError> {
     for (index, step) in fixture.steps.iter().enumerate() {
         let mut cost = ResourceVector::zero();
         cost.set(fixture.scarce, step.cost);
+        if quota_opening.is_some() {
+            cost.provider_quota = step.cost;
+        }
         let fault = if fixture.fault_at_step == Some(index) {
             fixture.fault
         } else {
@@ -789,8 +819,18 @@ fn materialise(fixture: &Fixture) -> Result<(Drive, Material), SimError> {
             policy,
             steps,
             observed_per_gate,
+            quota_opening,
         },
     ))
+}
+
+fn engaged_quota(fixture: &Fixture) -> Option<u64> {
+    let reading = crate::quota::read_ingauge(fixture.ingauge.as_ref()?);
+    if reading.engaged {
+        reading.remaining
+    } else {
+        None
+    }
 }
 
 fn apply_step(drive: &mut Drive, step: &PlannedStep, seq: &mut u32) -> Result<(), SimError> {

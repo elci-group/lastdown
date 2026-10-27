@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Plate 04 · Scouting and the Route — Lastdown Anthology</title>
+  <meta name="description" content="Blind scouting, candidate packets, effective yards-to-go, and route selection.">
+  <link rel="icon" href="/favicon.svg">
+  <link rel="stylesheet" href="/css/anthology.css">
+</head>
+<body>
+  <a class="skip" href="#plate">Skip to the plate</a>
+  <div class="volume">
+    <aside class="spine">
+      <a class="mark" href="/">
+        <span class="mark-ld">Field book</span>
+        <span class="mark-name">Lastdown</span>
+        <span class="mark-magic">LASTDOWN/1</span>
+      </a>
+      <nav aria-label="Plates">
+        <ol>
+          <li><a href="/"><span>00</span> Contents</a></li>
+          <li><a href="/field"><span>01</span> The Field</a></li>
+          <li><a href="/reserve"><span>02</span> The Reserve</a></li>
+          <li><a href="/continuation"><span>03</span> Continuation</a></li>
+          <li><a href="/scouting"><span>04</span> Scouting</a></li>
+          <li><a href="/quota"><span>05</span> Account Quota</a></li>
+          <li><a href="/benches"><span>06</span> Measured Ledger</a></li>
+          <li><a href="/operate"><span>07</span> Operator</a></li>
+        </ol>
+      </nav>
+      <p class="spine-foot">Edition 0.1.2<br>Arrow keys turn the page</p>
+    </aside>
+    <article class="leaf" id="plate">
+      <p class="watermark" aria-hidden="true">04</p>
+      <header class="running">
+        <span>Plate 04</span>
+        <span>Scouting and the Route</span>
+        <span>Schema 1</span>
+      </header>
+      <p class="kicker">Candidates and one selection</p>
+      <h1>The coordinator names the route.</h1>
+      <p class="opening">Blind scouting hands each candidate an unattributed projection. The call is <code>request_scouts</code>, and the return is <code>complete_scouts</code>. A response outside the requested range, or one that contradicts itself, is rejected. The default fixture drive does not enter blind scout on its own. After a punt it assigns possession and returns to normal.</p>
+      <svg class="diagram" viewBox="0 0 640 168" role="img" aria-labelledby="scoutTitle scoutDesc">
+        <title id="scoutTitle">Three candidates and one selected route</title>
+        <desc id="scoutDesc">Three equal candidate cards carry evidence and gates. A coordinator bar beneath them marks a single selected route. Rankings stay on the coordinator.</desc>
+        <g fill="#fffaf2" stroke="#c9b89a">
+          <rect x="16" y="16" width="180" height="78"/>
+          <rect x="230" y="16" width="180" height="78"/>
+          <rect x="444" y="16" width="180" height="78"/>
+        </g>
+        <g fill="#1c1612" font-family="Palatino, Georgia, serif" font-size="16">
+          <text x="32" y="46">Candidate</text>
+          <text x="246" y="46">Candidate</text>
+          <text x="460" y="46">Candidate</text>
+        </g>
+        <g fill="#4a3d32" font-family="ui-monospace, monospace" font-size="12">
+          <text x="32" y="70">evidence, gates</text>
+          <text x="246" y="70">evidence, gates</text>
+          <text x="460" y="70">evidence, gates</text>
+        </g>
+        <rect x="16" y="112" width="608" height="40" fill="#163028"/>
+        <text x="32" y="137" fill="#f7f2e8" font-family="Palatino, Georgia, serif" font-size="16">Coordinator selects one route. Rankings stay here.</text>
+      </svg>
+      <h2>Effective yards</h2>
+      <p>Every adjustment stays on the record so a route can be recomputed from the same inputs. One million ppm is a neutral multiplier. Milli-yard terms are the nominal distance, historical error, variance, and recovery cost.</p>
+      <pre class="formula"><code>calibrated = nominal + historical_error
+blended    = calibrated + variance * (1 - calibration_confidence)
+stretched  = blended / provider_reliability
+effective  = stretched / (domain_suitability * capability_headroom) + recovery_cost</code></pre>
+      <p>Ties break on an explicit priority, then on the route id. Calibration is stored per versioned model key, task class, and toolset.</p>
+      <h2>What a candidate can see</h2>
+      <div class="cols">
+        <section class="card">
+          <h3>On the packet</h3>
+          <p>Evidence, open gates, and contradictions. Enough to estimate the work that remains.</p>
+        </section>
+        <section class="card">
+          <h3>With the coordinator</h3>
+          <p>Predecessor distance, rankings, coordinator notes, model reputation, and the conversation. The packet scanner refuses those keys.</p>
+        </section>
+      </div>
+      <nav class="turn" aria-label="Adjacent plates">
+        <a href="/continuation">Previous · Continuation</a>
+        <a href="/quota">Next · Account Quota</a>
+      </nav>
+    </article>
+  </div>
+  <script src="/js/anthology.js"></script>
+</body>
+</html>

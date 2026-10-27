@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Plate 06 · Measured Ledger — Lastdown Anthology</title>
+  <meta name="description" content="Locked Lastdown and baseline bench lines for the fixture set.">
+  <link rel="icon" href="/favicon.svg">
+  <link rel="stylesheet" href="/css/anthology.css">
+</head>
+<body>
+  <a class="skip" href="#plate">Skip to the plate</a>
+  <div class="volume">
+    <aside class="spine">
+      <a class="mark" href="/">
+        <span class="mark-ld">Field book</span>
+        <span class="mark-name">Lastdown</span>
+        <span class="mark-magic">LASTDOWN/1</span>
+      </a>
+      <nav aria-label="Plates">
+        <ol>
+          <li><a href="/"><span>00</span> Contents</a></li>
+          <li><a href="/field"><span>01</span> The Field</a></li>
+          <li><a href="/reserve"><span>02</span> The Reserve</a></li>
+          <li><a href="/continuation"><span>03</span> Continuation</a></li>
+          <li><a href="/scouting"><span>04</span> Scouting</a></li>
+          <li><a href="/quota"><span>05</span> Account Quota</a></li>
+          <li><a href="/benches"><span>06</span> Measured Ledger</a></li>
+          <li><a href="/operate"><span>07</span> Operator</a></li>
+        </ol>
+      </nav>
+      <p class="spine-foot">Edition 0.1.2<br>Arrow keys turn the page</p>
+    </aside>
+    <article class="leaf" id="plate">
+      <p class="watermark" aria-hidden="true">06</p>
+      <header class="running">
+        <span>Plate 06</span>
+        <span>Measured Ledger</span>
+        <span>Fixture runner</span>
+      </header>
+      <p class="kicker">What the runner prints</p>
+      <h1>The same numbers, every time.</h1>
+      <p class="opening">These lines are the contract of the checkout. <code>token_budget</code> and <code>quota_limit</code> are asserted in <code>tests/quota.rs</code>. The scoreboard below repeats the full bench print, including fields the tests also pin on the neighbouring fixtures.</p>
+      <section class="scoreboard" aria-label="token_budget">
+        <article class="score">
+          <h3>token_budget · lastdown</h3>
+          <p class="status">score</p>
+          <dl>
+            <div><dt>Consumed</dt><dd>8000</dd></div>
+            <div><dt>Lost</dt><dd>0</dd></div>
+            <div><dt>Artifacts</dt><dd>4</dd></div>
+            <div><dt>Contradictions</dt><dd>1</dd></div>
+            <div><dt>Context losses</dt><dd>0</dd></div>
+            <div><dt>Duplicate steps</dt><dd>0</dd></div>
+            <div><dt>Replay</dt><dd>true</dd></div>
+            <div><dt>Continuation</dt><dd>2940</dd></div>
+          </dl>
+        </article>
+        <article class="score">
+          <h3>token_budget · baseline</h3>
+          <p class="status">normal</p>
+          <dl>
+            <div><dt>Scored</dt><dd>false</dd></div>
+            <div><dt>Consumed</dt><dd>8000</dd></div>
+            <div><dt>Lost</dt><dd>8000</dd></div>
+            <div><dt>Artifacts</dt><dd>0</dd></div>
+            <div><dt>Context losses</dt><dd>2</dd></div>
+            <div><dt>Duplicate steps</dt><dd>2</dd></div>
+            <div><dt>Replay</dt><dd>false</dd></div>
+            <div><dt>Continuation</dt><dd>0</dd></div>
+          </dl>
+        </article>
+        <article class="score">
+          <h3>quota_limit · lastdown</h3>
+          <p class="status">punt</p>
+          <dl>
+            <div><dt>Consumed</dt><dd>2000</dd></div>
+            <div><dt>Lost</dt><dd>0</dd></div>
+            <div><dt>Artifacts</dt><dd>1</dd></div>
+            <div><dt>Gates</dt><dd>1</dd></div>
+            <div><dt>Quota left</dt><dd>2500</dd></div>
+            <div><dt>Context losses</dt><dd>0</dd></div>
+            <div><dt>Duplicate steps</dt><dd>0</dd></div>
+            <div><dt>Continuation</dt><dd>2427</dd></div>
+          </dl>
+        </article>
+        <article class="score">
+          <h3>quota_limit · baseline</h3>
+          <p class="status">score</p>
+          <dl>
+            <div><dt>Scored</dt><dd>true</dd></div>
+            <div><dt>Consumed</dt><dd>8000</dd></div>
+            <div><dt>Lost</dt><dd>0</dd></div>
+            <div><dt>Artifacts</dt><dd>4</dd></div>
+            <div><dt>Quota left</dt><dd>absent</dd></div>
+            <div><dt>Context losses</dt><dd>0</dd></div>
+            <div><dt>Duplicate steps</dt><dd>0</dd></div>
+            <div><dt>Continuation</dt><dd>0</dd></div>
+          </dl>
+        </article>
+      </section>
+      <h2>Printed lines</h2>
+      <pre><code>lastdown fixture=token_budget status=score scored=true scarce_consumed=8000 scarce_lost=0 artifacts=4 contradictions=1 context_losses=0 duplicate_steps=0 replay_ok=true continuation_bytes=2940
+baseline fixture=token_budget status=normal scored=false scarce_consumed=8000 scarce_lost=8000 artifacts=0 contradictions=0 context_losses=2 duplicate_steps=2 replay_ok=false continuation_bytes=0
+lastdown fixture=quota_limit status=punt scored=false scarce_consumed=2000 scarce_lost=0 artifacts=1 contradictions=0 context_losses=0 duplicate_steps=0 replay_ok=true continuation_bytes=2427
+lastdown quota_remaining=2500
+baseline fixture=quota_limit status=score scored=true scarce_consumed=8000 scarce_lost=0 artifacts=4 contradictions=0 context_losses=0 duplicate_steps=0 replay_ok=false continuation_bytes=0
+lastdown fixture=provider_loss status=score scored=true scarce_consumed=8000 scarce_lost=0 artifacts=4 contradictions=1 context_losses=0 duplicate_steps=0 replay_ok=true continuation_bytes=2414
+baseline fixture=provider_loss status=score scored=true scarce_consumed=10000 scarce_lost=2000 artifacts=4 contradictions=1 context_losses=1 duplicate_steps=1 replay_ok=false continuation_bytes=0
+lastdown fixture=punt_loop status=punt scored=false scarce_consumed=0 scarce_lost=0 artifacts=0 contradictions=0 context_losses=0 duplicate_steps=0 replay_ok=true continuation_bytes=1754
+baseline fixture=punt_loop status=normal scored=false scarce_consumed=0 scarce_lost=0 artifacts=0 contradictions=0 context_losses=2 duplicate_steps=0 replay_ok=false continuation_bytes=0</code></pre>
+      <h2>Neighbouring fixtures</h2>
+      <table>
+        <caption>Assertions the suite holds beside the two locked benches.</caption>
+        <thead>
+          <tr><th scope="col">Fixture</th><th scope="col">Lastdown</th><th scope="col">Baseline</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>provider_loss</code></td>
+            <td>Context losses 0. Artifacts at least 1. Scarce lost at or under the baseline. A provider-terminated boundary preserves the field, and <code>MachineEvent::Unrecoverable(ProviderExhausted)</code> returns <code>ExhaustionIsNotTurnover</code>.</td>
+            <td>Context losses at least 1. Scarce lost at or above Lastdown.</td>
+          </tr>
+          <tr>
+            <td><code>punt_loop</code></td>
+            <td>Reassessment is set. Turnover stays clear. Committed packages equal 3. The grant is 1&nbsp;000 and the step costs 5&nbsp;000, so ordinary work never starts.</td>
+            <td>Ablation records that fixture’s own lost total beside the others.</td>
+          </tr>
+          <tr>
+            <td>Every fixture</td>
+            <td colspan="2">The milestone walk loads each JSON file. None finish as a turnover. Every fixture other than <code>punt_loop</code> replays and commits at least one package. The directory holds at least nine fixtures. <code>punt_loop</code> is pinned by its own test, above.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p><code>ablate</code> prints lost resources for Lastdown and the baseline on each fixture, then three mechanism gaps: reserve, amnesia, and calibration. On <code>token_budget</code> those lost totals are 0 with the reserve and 8&nbsp;000 without it.</p>
+      <nav class="turn" aria-label="Adjacent plates">
+        <a href="/quota">Previous · Account Quota</a>
+        <a href="/operate">Next · Operator</a>
+      </nav>
+    </article>
+  </div>
+  <script src="/js/anthology.js"></script>
+</body>
+</html>
