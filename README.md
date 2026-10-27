@@ -21,6 +21,7 @@ cargo run --bin lastdown -- bench elci/fixtures/token_budget.json
 cargo run --bin lastdown -- sim elci/fixtures/provider_loss.json
 cargo run --bin lastdown -- ablate elci/fixtures
 cargo run --bin lastdown -- prove elci/fixtures
+cargo run --bin lastdown -- jumbotron elci/fixtures/token_budget.json
 cargo run --bin lastdown -- handoff elci/fixtures/token_budget.json /tmp/token_budget.continuation.json
 cargo run --bin lastdown -- resume elci/fixtures/token_budget.json /tmp/token_budget.continuation.json
 ```
@@ -47,6 +48,15 @@ the harness.
 `amnesia_advantage` stays unmeasured. `isolation_clean` and `isolation_raw`
 are the poisoned-field hit counts from `ablate`. A clean packet is a leak
 scan. It is not a comparison of receiver selection.
+
+## Jumbotron
+
+`jumbotron` runs the bench and puts the drive on a stadium board: block
+letters name the outcome, the objective rolls on the wire, and the budget
+and quota bars grow to the final numbers. A terminal gets a short frame
+loop; a pipe gets one deterministic frame. Rendering uses the local
+`form3` crate by path, so its zero-dependency ANSI engine stays outside
+the registry dependency set.
 
 ## Reserve
 

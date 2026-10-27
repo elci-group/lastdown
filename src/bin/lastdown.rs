@@ -9,7 +9,7 @@ use lastdown::sim::{
     resume_handoff, Kill, Mode,
 };
 
-const USAGE: &str = "usage: lastdown bench [fixture] | lastdown sim <fixture> | lastdown ablate [dir] | lastdown handoff <fixture> <file> | lastdown resume <fixture> <file> | lastdown quota <snapshot.json> | lastdown prove [dir]";
+const USAGE: &str = "usage: lastdown bench [fixture] | lastdown sim <fixture> | lastdown ablate [dir] | lastdown handoff <fixture> <file> | lastdown resume <fixture> <file> | lastdown quota <snapshot.json> | lastdown prove [dir] | lastdown jumbotron <fixture>";
 
 fn main() -> ExitCode {
     let mut args = env::args().skip(1);
@@ -138,6 +138,19 @@ fn main() -> ExitCode {
                 }
                 Err(error) => {
                     eprintln!("prove failed: {error}");
+                    ExitCode::from(1)
+                }
+            }
+        }
+        "jumbotron" => {
+            let Some(path) = args.next() else {
+                eprintln!("{USAGE}");
+                return ExitCode::from(2);
+            };
+            match lastdown::jumbotron::run(Path::new(&path)) {
+                Ok(()) => ExitCode::SUCCESS,
+                Err(error) => {
+                    eprintln!("jumbotron failed: {error}");
                     ExitCode::from(1)
                 }
             }

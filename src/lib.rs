@@ -14,6 +14,7 @@ pub mod coordinator;
 pub mod core;
 pub mod error;
 pub mod ids;
+pub mod jumbotron;
 pub mod learning;
 pub mod padagonia;
 pub mod provider;
