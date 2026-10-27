@@ -203,6 +203,16 @@ fn bar(length: u64, position: u64, style: ProgressStyle) -> String {
     bar.to_string()
 }
 
+/// A percent-free twenty-cell gauge. The quota row must stay under eighty
+/// columns so a redraw never wraps and smears the loop.
+fn gauge(length: u64, position: u64) -> String {
+    let mut bar = ProgressBar::new(length);
+    bar.set_template("{bar}");
+    bar.set_bar_style('─', '·', 20);
+    bar.set_position(position);
+    bar.to_string()
+}
+
 fn label(text: &str, support: ColorSupport) -> String {
     format!("{text:<LABEL_WIDTH$}")
         .bright_black()
@@ -350,7 +360,7 @@ impl Jumbotron {
             ),
             support,
         ));
-        lines.push(row("quota", self.quota_text(step, support), support));
+        lines.push(row("quota", self.quota_text(step), support));
         lines.push(row(
             "wire",
             self.accent.tint(
@@ -363,19 +373,12 @@ impl Jumbotron {
         lines.join("\n")
     }
 
-    fn quota_text(&self, step: f32, support: ColorSupport) -> String {
+    fn quota_text(&self, step: f32) -> String {
         match (self.lastdown.quota_remaining, self.quota_limit) {
             (Some(remaining), Some(limit)) => {
                 let provider = self.quota_provider.as_deref().unwrap_or("-");
-                let gauge = self.accent.tint(
-                    &bar(
-                        limit,
-                        grow(limit.saturating_sub(remaining), step),
-                        ProgressStyle::Line,
-                    ),
-                    support,
-                );
-                format!("provider={provider} remaining={remaining} limit={limit} {gauge}")
+                let fill = gauge(limit, grow(limit.saturating_sub(remaining), step));
+                format!("provider={provider} remaining={remaining} limit={limit} {fill}")
             }
             (Some(remaining), None) => format!("remaining={remaining} limit=-"),
             (None, _) => "-".to_string(),
@@ -407,13 +410,23 @@ pub fn run(path: &Path) -> Result<(), SimError> {
     let _ = write!(out, "{}", ansi::hide_cursor());
     for tick in 0..=FRAMES {
         if tick > 0 {
-            let _ = write!(out, "{}", ansi::move_up(height));
+            let _ = write!(
+                out,
+                "{}{}",
+                ansi::move_up(height),
+                ansi::clear_to_end_of_screen()
+            );
         }
         let _ = writeln!(out, "{}", board.frame(tick, info.color_support, true));
         let _ = out.flush();
         sleep(delay);
     }
-    let _ = write!(out, "{}", ansi::move_up(height));
+    let _ = write!(
+        out,
+        "{}{}",
+        ansi::move_up(height),
+        ansi::clear_to_end_of_screen()
+    );
     let _ = writeln!(out, "{}", board.frame(FRAMES, info.color_support, false));
     let _ = write!(out, "{}", ansi::show_cursor());
     let _ = out.flush();

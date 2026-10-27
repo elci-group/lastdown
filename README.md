@@ -58,6 +58,27 @@ loop; a pipe gets one deterministic frame. Rendering uses the local
 `form3` crate by path, so its zero-dependency ANSI engine stays outside
 the registry dependency set.
 
+## Tapes
+
+The tapes under `docs/tapes/` are [vhs](https://github.com/charmbracelet/vhs)
+recordings of the commands above. Re-render from the checkout root after
+`cargo build --offline`:
+
+```bash
+vhs docs/tapes/bench.tape
+vhs docs/tapes/prove.tape
+vhs docs/tapes/quota.tape
+vhs docs/tapes/jumbotron.tape
+```
+
+![bench](docs/tapes/bench.gif)
+
+![prove](docs/tapes/prove.gif)
+
+![quota](docs/tapes/quota.gif)
+
+![jumbotron](docs/tapes/jumbotron.gif)
+
 ## Reserve
 
 Ordinary work may spend `remaining - reserve_hold`. Continuation work may
