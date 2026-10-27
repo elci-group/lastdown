@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "name": "financial_budget",
+  "scarce": "account_budget",
+  "grant": 5000,
+  "reserve": 800,
+  "other_grant": 1000000,
+  "velocity_tokens_per_sec": 0,
+  "provider_health_ppm": 1000000,
+  "rate_limit_headroom_ppm": 1000000,
+  "nominal_ytg_milli": 10000,
+  "historical_ytg_error_milli": 0,
+  "objective": "Land the patch with the suite green.",
+  "constraint_key": "repo",
+  "constraint_value": "lastdown",
+  "gates": [
+    {
+      "id": "g1",
+      "name": "reproduce",
+      "utility": 10,
+      "partial_utility": 4,
+      "required": true
+    },
+    {
+      "id": "g2",
+      "name": "failing-test",
+      "utility": 10,
+      "partial_utility": 4,
+      "required": true
+    },
+    {
+      "id": "g3",
+      "name": "patch",
+      "utility": 10,
+      "partial_utility": 4,
+      "required": true
+    },
+    {
+      "id": "g4",
+      "name": "suite",
+      "utility": 10,
+      "partial_utility": 4,
+      "required": true
+    }
+  ],
+  "steps": [
+    {
+      "gate": "g1",
+      "cost": 2000,
+      "body": "repro case for the empty input",
+      "observation": "failure is deterministic on empty input"
+    },
+    {
+      "gate": "g2",
+      "cost": 2000,
+      "body": "failing regression pinned",
+      "observation": "suite fails in handler",
+      "assertion": "handler is pure"
+    },
+    {
+      "gate": "g3",
+      "cost": 2000,
+      "body": "minimal patch",
+      "passing_test": false
+    },
+    {
+      "gate": "g4",
+      "cost": 2000,
+      "body": "suite green",
+      "passing_test": true
+    }
+  ],
+  "fault_at_step": null,
+  "fault": null,
+  "kill": "none",
+  "destination": "local",
+  "min_attempt_ppm": 550000,
+  "reset_bonus_ppm": 0
+}

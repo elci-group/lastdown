@@ -1,0 +1,17 @@
+[package]
+name = "lastdown"
+version = "0.1.1"
+edition = "2021"
+license = "MIT"
+publish = false
+rust-version = "1.85"
+description = "Anticipatory possession transfer before computational runway runs out."
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+thiserror = "1"
+
+[dev-dependencies]
+serde_json = "1"
