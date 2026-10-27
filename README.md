@@ -20,7 +20,12 @@ cargo test
 cargo run --bin lastdown -- bench elci/fixtures/token_budget.json
 cargo run --bin lastdown -- sim elci/fixtures/provider_loss.json
 cargo run --bin lastdown -- ablate elci/fixtures
+cargo run --bin lastdown -- handoff elci/fixtures/token_budget.json /tmp/token_budget.continuation.json
+cargo run --bin lastdown -- resume elci/fixtures/token_budget.json /tmp/token_budget.continuation.json
 ```
+
+`handoff` stops at the committed punt and writes that package. `resume` loads
+the file in a fresh process. The resume request supplies the receiver route.
 
 Fixtures under `elci/fixtures/` are replayable exhaustion, fault, and
 punt-loop cases. `ablate` prints lost resources for Lastdown and the baseline,

@@ -3,14 +3,16 @@ use std::process::ExitCode;
 
 use std::path::Path;
 
-use lastdown::sim::{ablate_dir, bench, execute, load_fixture, Kill, Mode};
+use lastdown::sim::{
+    ablate_dir, bench, execute, export_handoff, load_fixture, resume_handoff, Kill, Mode,
+};
+
+const USAGE: &str = "usage: lastdown bench [fixture] | lastdown sim <fixture> | lastdown ablate [dir] | lastdown handoff <fixture> <file> | lastdown resume <fixture> <file>";
 
 fn main() -> ExitCode {
     let mut args = env::args().skip(1);
     let Some(command) = args.next() else {
-        eprintln!(
-            "usage: lastdown bench [fixture] | lastdown sim <fixture> | lastdown ablate [dir]"
-        );
+        eprintln!("{USAGE}");
         return ExitCode::from(2);
     };
     let outcome = match command.as_str() {
@@ -35,7 +37,7 @@ fn main() -> ExitCode {
         }
         "sim" => {
             let Some(path) = args.next() else {
-                eprintln!("usage: lastdown bench [fixture] | lastdown sim <fixture> | lastdown ablate [dir]");
+                eprintln!("{USAGE}");
                 return ExitCode::from(2);
             };
             match load_fixture(&path).and_then(|fixture| {
@@ -80,14 +82,67 @@ fn main() -> ExitCode {
                 }
             }
         }
+        "handoff" => {
+            let Some(fixture_path) = args.next() else {
+                eprintln!("{USAGE}");
+                return ExitCode::from(2);
+            };
+            let Some(out) = args.next() else {
+                eprintln!("{USAGE}");
+                return ExitCode::from(2);
+            };
+            match load_and_handoff(&fixture_path, &out) {
+                Ok(campaign) => {
+                    print_result("lastdown", &campaign.result);
+                    ExitCode::SUCCESS
+                }
+                Err(error) => {
+                    eprintln!("handoff failed: {error}");
+                    ExitCode::from(1)
+                }
+            }
+        }
+        "resume" => {
+            let Some(fixture_path) = args.next() else {
+                eprintln!("{USAGE}");
+                return ExitCode::from(2);
+            };
+            let Some(file) = args.next() else {
+                eprintln!("{USAGE}");
+                return ExitCode::from(2);
+            };
+            match load_fixture(&fixture_path).and_then(|fixture| {
+                resume_handoff(&fixture, Path::new(&file))
+                    .map_err(|error| lastdown::error::FixtureError::Io(error.to_string()))
+            }) {
+                Ok(campaign) => {
+                    print_result("lastdown", &campaign.result);
+                    ExitCode::SUCCESS
+                }
+                Err(error) => {
+                    eprintln!("resume failed: {error}");
+                    ExitCode::from(1)
+                }
+            }
+        }
         _ => {
-            eprintln!(
-                "usage: lastdown bench [fixture] | lastdown sim <fixture> | lastdown ablate [dir]"
-            );
+            eprintln!("{USAGE}");
             ExitCode::from(2)
         }
     };
     outcome
+}
+
+fn load_and_handoff(
+    fixture_path: &str,
+    out: &str,
+) -> Result<lastdown::sim::Campaign, lastdown::error::FixtureError> {
+    let fixture = load_fixture(fixture_path)?;
+    let campaign = execute(&fixture, Mode::Lastdown, Kill::ImmediatelyAfterCommit)
+        .map_err(|error| lastdown::error::FixtureError::Io(error.to_string()))?;
+    export_handoff(&campaign, Path::new(out))
+        .map_err(|error| lastdown::error::FixtureError::Io(error.to_string()))?;
+    Ok(campaign)
 }
 
 fn print_result(label: &str, result: &lastdown::sim::SimResult) {

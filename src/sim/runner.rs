@@ -22,7 +22,9 @@ use crate::error::{
 use crate::ids::{ArtifactId, ClaimId, DriveId, EffectId, FieldId, GateId, RouteId};
 use crate::padagonia::FieldLedger;
 use crate::provider::BoundarySignal;
-use crate::punt::continuation::{canonical_bytes, validate};
+use crate::punt::continuation::{
+    canonical_bytes, leaks_competitive_metadata, validate, ContinuationObject,
+};
 use crate::punt::replay::ResumeRequest;
 use crate::punt::store::{ContinuationStore, MemoryStore};
 use crate::resource::{ContinuationReserve, Probability, ResourceDim, ResourceVector};
@@ -234,12 +236,60 @@ pub fn execute(fixture: &Fixture, mode: Mode, kill: Kill) -> Result<Campaign, Si
 }
 
 pub fn run_lastdown(fixture: &Fixture, kill: Kill) -> Result<Campaign, SimError> {
+    run_drive(fixture, kill, None)
+}
+
+/// Continue a fixture from a committed continuation in a fresh process.
+pub fn resume_committed(
+    fixture: &Fixture,
+    object: &ContinuationObject,
+) -> Result<Campaign, SimError> {
+    let bytes = canonical_bytes(object)?;
+    if leaks_competitive_metadata(&bytes) {
+        return Err(SimError::Fixture("leak"));
+    }
+    validate(object)?;
+    run_drive(fixture, Kill::None, Some(object))
+}
+
+pub fn committed_package(campaign: &Campaign) -> Result<Vec<u8>, SimError> {
+    let object = campaign
+        .store
+        .latest_committed(campaign.drive_id.as_str())?
+        .ok_or(SimError::Fixture("commit"))?;
+    let bytes = canonical_bytes(&object)?;
+    if leaks_competitive_metadata(&bytes) {
+        return Err(SimError::Fixture("leak"));
+    }
+    Ok(bytes)
+}
+
+fn run_drive(
+    fixture: &Fixture,
+    kill: Kill,
+    handed: Option<&ContinuationObject>,
+) -> Result<Campaign, SimError> {
     let (mut drive, material) = materialise(fixture)?;
     let drive_id = drive.drive_id.clone();
-    let mut sentinel = Sentinel::new(MemoryStore::default(), fixture.destination, 0);
-    sentinel.start(&mut drive)?;
+    let mut store = MemoryStore::default();
+    if let Some(object) = handed {
+        if object.identity.drive_id != drive_id.as_str() {
+            return Err(SimError::Fixture("drive"));
+        }
+        store.prepare(object)?;
+        store.commit(drive_id.as_str(), object.identity.generation)?;
+    }
+    let mut sentinel = Sentinel::new(store, fixture.destination, 0);
     let mut cursor = 0usize;
     let mut seq = 0u32;
+    if let Some(object) = handed {
+        let request = receiver_request(&material, 0)?;
+        drive = sentinel.resume(&drive_id, object.identity.generation, request)?;
+        cursor = first_open_step(&material.steps, &drive.field.completed_gates);
+        seq = u32::try_from(drive.field.artifacts.len()).map_err(|_| SimError::Fixture("seq"))?;
+    } else {
+        sentinel.start(&mut drive)?;
+    }
     let mut cleared = HashSet::new();
     let mut marks = Vec::new();
     let mut spent = Vec::new();
@@ -361,7 +411,12 @@ fn fresh_possession(
         .last()
         .map(|event| event.at_ms)
         .unwrap_or(0);
-    let request = ResumeRequest {
+    let request = receiver_request(material, now_ms)?;
+    Ok(sentinel.resume(&drive.drive_id, generation, request)?)
+}
+
+fn receiver_request(material: &Material, now_ms: u64) -> Result<ResumeRequest, SimError> {
+    Ok(ResumeRequest {
         route: ModelRoute {
             route_id: RouteId::new("route-receiver")?,
             model_key: "receiver-beta-2026-10".to_string(),
@@ -373,8 +428,14 @@ fn fresh_possession(
         reserve_hold: material.hold,
         policy: material.policy.clone(),
         now_ms,
-    };
-    Ok(sentinel.resume(&drive.drive_id, generation, request)?)
+    })
+}
+
+fn first_open_step(steps: &[PlannedStep], completed: &[GateId]) -> usize {
+    steps
+        .iter()
+        .position(|step| !completed.iter().any(|gate| gate == &step.gate))
+        .unwrap_or(steps.len())
 }
 
 fn run_baseline(fixture: &Fixture) -> Result<Campaign, SimError> {
