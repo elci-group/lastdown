@@ -24,6 +24,11 @@ required = true
 forbid_regex = ["TODO", "FIXME", "unimplemented!"]
 
 [[file]]
+path = "src/sim/suite.rs"
+required = true
+forbid_regex = ["TODO", "FIXME", "unimplemented!"]
+
+[[file]]
 path = "src/jumbotron.rs"
 required = true
 forbid_regex = ["TODO", "FIXME", "unimplemented!"]

@@ -5,11 +5,11 @@ use std::process::ExitCode;
 use std::path::Path;
 
 use lastdown::sim::{
-    ablate_dir, bench, execute, export_handoff, load_fixture, proof_lines, prove_dir,
-    resume_handoff, Kill, Mode,
+    ablate_dir, bench, benchmark_dir, execute, export_handoff, load_fixture, proof_lines,
+    prove_dir, resume_handoff, suite_lines, Kill, Mode,
 };
 
-const USAGE: &str = "usage: lastdown bench [fixture] | lastdown sim <fixture> | lastdown ablate [dir] | lastdown handoff <fixture> <file> | lastdown resume <fixture> <file> | lastdown quota <snapshot.json> | lastdown prove [dir] | lastdown jumbotron <fixture>";
+const USAGE: &str = "usage: lastdown bench [fixture] | lastdown sim <fixture> | lastdown ablate [dir] | lastdown handoff <fixture> <file> | lastdown resume <fixture> <file> | lastdown quota <snapshot.json> | lastdown prove [dir] | lastdown benchmark [dir] | lastdown jumbotron <fixture>";
 
 fn main() -> ExitCode {
     let mut args = env::args().skip(1);
@@ -138,6 +138,21 @@ fn main() -> ExitCode {
                 }
                 Err(error) => {
                     eprintln!("prove failed: {error}");
+                    ExitCode::from(1)
+                }
+            }
+        }
+        "benchmark" => {
+            let path = args.next().unwrap_or_else(|| "elci/fixtures".to_string());
+            match benchmark_dir(Path::new(&path)) {
+                Ok(report) => {
+                    for line in suite_lines(&report) {
+                        println!("{line}");
+                    }
+                    ExitCode::SUCCESS
+                }
+                Err(error) => {
+                    eprintln!("benchmark failed: {error}");
                     ExitCode::from(1)
                 }
             }

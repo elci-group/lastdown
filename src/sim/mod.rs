@@ -2,6 +2,7 @@ mod ablation;
 mod handoff;
 mod prove;
 mod runner;
+mod suite;
 
 pub use ablation::{
     ablate_dir, ablation_report, load_fixture_dir, AblationReport, FixtureComparison, MechanismGap,
@@ -12,3 +13,4 @@ pub use runner::{
     bench, committed_package, execute, load_fixture, resume_committed, BenchReport, Campaign,
     Fixture, Kill, Mode, SimError, SimResult,
 };
+pub use suite::{benchmark_dir, suite_lines, Claim, SuiteReport, Verdict as SuiteVerdict};

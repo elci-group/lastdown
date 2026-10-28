@@ -79,6 +79,20 @@ vhs docs/tapes/jumbotron.tape
 
 ![jumbotron](docs/tapes/jumbotron.gif)
 
+## Benchmark
+
+`benchmark` runs the seeded, paired, three-arm suite: the mechanism against
+a byte-capped summary restart and a naive cold restart, over deterministic
+jitter variants of every fixture. One waste formula covers every arm, and
+the two value claims are tested with an exact sign test, a fixed-seed
+bootstrap interval, and Holm correction under pre-declared decision rules
+(`docs/benchmark.md`). `prove` keeps its honest `unmeasured` verdicts until
+the suite holds across releases.
+
+```bash
+cargo run --bin lastdown -- benchmark elci/fixtures
+```
+
 ## Reserve
 
 Ordinary work may spend `remaining - reserve_hold`. Continuation work may
